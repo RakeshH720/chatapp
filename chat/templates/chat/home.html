@@ -1,0 +1,75 @@
+<!-- chat/templates/chat/home.html -->
+{% extends 'chat/base.html' %}
+{% block title %}Chats{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 style="margin-bottom: 20px; font-size: 1.3rem; color: var(--text-dim);">
+        All Users
+    </h2>
+    
+    {% if user_data %}
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for item in user_data %}
+        <a href="{% url 'chat_room' item.user.id %}" style="text-decoration: none;">
+            <div class="user-card" style="
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 16px 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: all 0.2s;
+                cursor: pointer;
+            "
+            onmouseover="this.style.borderColor='var(--accent)'; this.style.background='var(--surface2)';"
+            onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--surface)';">
+                
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <!-- Avatar -->
+                    <div style="
+                        width: 46px; height: 46px;
+                        border-radius: 50%;
+                        background: var(--accent);
+                        display: flex; align-items: center; justify-content: center;
+                        font-weight: 700; font-size: 1.1rem; color: white;
+                        flex-shrink: 0;
+                    ">
+                        {{ item.user.username|first|upper }}
+                    </div>
+                    
+                    <div>
+                        <div style="font-weight: 600; font-size: 1rem;">{{ item.user.username }}</div>
+                        <div style="font-size: 0.8rem; margin-top: 2px;">
+                            <span class="status-dot {% if item.is_online %}online{% else %}offline{% endif %}"></span>
+                            <span style="color: var(--text-dim);">{% if item.is_online %}Online{% else %}Offline{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Unread badge -->
+                {% if item.unread_count > 0 %}
+                <div style="
+                    background: var(--accent);
+                    color: white;
+                    border-radius: 50%;
+                    width: 26px; height: 26px;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 0.78rem;
+                    font-weight: 700;
+                ">
+                    {{ item.unread_count }}
+                </div>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px; color: var(--text-dim);">
+        <div style="font-size: 3rem; margin-bottom: 12px;">👤</div>
+        <p>No other users yet. Share the link with a friend to start chatting!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

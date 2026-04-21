@@ -1,0 +1,42 @@
+<!-- chat/templates/chat/login.html -->
+{% extends 'chat/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h2>Welcome Back</h2>
+    {% if form.errors %}
+        <ul class="errorlist"><li>Invalid username or password.</li></ul>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <div class="form-footer">
+        No account? <a href="{% url 'signup' %}">Sign Up</a>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('input').forEach(input => {
+    input.style.cssText = `
+        width: 100%; background: var(--surface2); border: 1px solid var(--border);
+        border-radius: 8px; padding: 10px 14px; color: var(--text);
+        font-size: 0.95rem; outline: none; box-sizing: border-box;
+    `;
+    input.addEventListener('focus', () => {
+        input.style.borderColor = 'var(--accent)';
+        input.style.boxShadow = '0 0 0 3px var(--accent-glow)';
+    });
+    input.addEventListener('blur', () => {
+        input.style.borderColor = 'var(--border)';
+        input.style.boxShadow = 'none';
+    });
+});
+</script>
+{% endblock %}
