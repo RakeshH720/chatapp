@@ -1,30 +1,34 @@
 # chatproject/settings.py
 
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key-here'  # Change this in production!
+# Read from environment variable on Render, fallback for local dev
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-local-dev-secret-key-change-in-production')
 
-DEBUG = True
+# False on Render (set via environment variable), True locally
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
 # Add our apps
 INSTALLED_APPS = [
-    'daphne',                    # Must be FIRST for ASGI to work
+    'daphne',                        # Must be FIRST for ASGI to work
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',                  # Django Channels
-    'chat',                      # Our chat app
+    'channels',                      # Django Channels
+    'chat',                          # Our chat app
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serves static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,7 +58,7 @@ TEMPLATES = [
 # Use ASGI instead of WSGI (required for Channels)
 ASGI_APPLICATION = 'chatproject.asgi.application'
 
-# Channel Layer — In-Memory (no Redis needed for development)
+# Channel Layer — In-Memory (fine for development & small deployments)
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
@@ -71,8 +75,10 @@ DATABASES = {
 
 # Static files
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'          # ← Where collectstatic copies files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Login redirect
+# Login redirects
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
